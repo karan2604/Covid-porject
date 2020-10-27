@@ -34,10 +34,12 @@ public class Frame extends javax.swing.JFrame {
     /**
      * Creates new form Frame
      */
+    
+    Offlinechartdata offlinechartdata=new Offlinechartdata();  //Class for Offlinechart
     private static HttpURLConnection connection; //Making http connection
     
     BufferedReader reader;    //next three lines for reading input form API
-    String line;
+    String line=null;
     StringBuffer content=new StringBuffer();
     JSONArray jsonarray;
     String graphtype="bar";  //setting for barchar and linechart
@@ -51,6 +53,7 @@ public class Frame extends javax.swing.JFrame {
     
     public void jsondata()
     {
+        
         try{
             URL url=new URL("https://api.apify.com/v2/datasets/58a4VXwBBF0HtxuQa/items?format=json&clean=1");
             connection=(HttpURLConnection) url.openConnection();
@@ -74,7 +77,20 @@ public class Frame extends javax.swing.JFrame {
                   reader.close();
                 }
                 
+                
+                
                 jsonarray=new JSONArray(content.toString());
+                
+                
+                
+                if(jsonarray.length()!=0)
+                {
+                    offlinechartdata.storedata(content.toString());   //Adding the data into file
+                }
+                
+                
+            
+            
                 
                 
         } catch (MalformedURLException ex) {
@@ -85,7 +101,9 @@ public class Frame extends javax.swing.JFrame {
         finally
         {
             connection.disconnect();
+            new Refresh();
             indiachart();     //when user first open the application, chart of india will be shown on the screen
+            
         }
     }
     
@@ -106,7 +124,7 @@ public class Frame extends javax.swing.JFrame {
         recoverpanel = new javax.swing.JPanel();
         deathpanel = new javax.swing.JPanel();
         jComboBox1 = new javax.swing.JComboBox();
-        jLabel1 = new javax.swing.JLabel();
+        record = new javax.swing.JLabel();
         linechart = new javax.swing.JButton();
         barchart = new javax.swing.JButton();
 
@@ -163,11 +181,11 @@ public class Frame extends javax.swing.JFrame {
             }
         });
 
-        jLabel1.setBackground(new java.awt.Color(255, 51, 102));
-        jLabel1.setFont(new java.awt.Font("Ebrima", 1, 18)); // NOI18N
-        jLabel1.setForeground(new java.awt.Color(0, 0, 0));
-        jLabel1.setText("Record");
-        jLabel1.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(0, 0, 0), 2, true));
+        record.setBackground(new java.awt.Color(255, 51, 102));
+        record.setFont(new java.awt.Font("Ebrima", 1, 18)); // NOI18N
+        record.setForeground(new java.awt.Color(0, 0, 0));
+        record.setText("Record");
+        record.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(0, 0, 0), 2, true));
 
         linechart.setText("Linechart");
         linechart.addActionListener(new java.awt.event.ActionListener() {
@@ -196,7 +214,7 @@ public class Frame extends javax.swing.JFrame {
                 .addGap(29, 29, 29)
                 .addComponent(linechart, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(29, 29, 29)
-                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 133, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(record, javax.swing.GroupLayout.PREFERRED_SIZE, 133, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(48, 48, 48))
         );
         layout.setVerticalGroup(
@@ -204,7 +222,7 @@ public class Frame extends javax.swing.JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addGap(63, 63, 63)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 51, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(record, javax.swing.GroupLayout.PREFERRED_SIZE, 51, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, 51, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(linechart, javax.swing.GroupLayout.PREFERRED_SIZE, 51, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(barchart, javax.swing.GroupLayout.PREFERRED_SIZE, 51, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -220,9 +238,12 @@ public class Frame extends javax.swing.JFrame {
     {
         if(jsonarray==null)
         {
-            showwindow();
-            return;
+           
+                    String data=offlinechartdata.readdata();   //Collecting the data from file
+                    jsonarray=new JSONArray(data);
+                    
         }
+        
         DefaultCategoryDataset total=new DefaultCategoryDataset();   //making the chart from JFreeChart
         DefaultCategoryDataset active=new DefaultCategoryDataset();
         DefaultCategoryDataset recovered=new DefaultCategoryDataset();
@@ -304,8 +325,9 @@ rangeAxis.setRange(0, 4000);
     {
         if(jsonarray==null)
         {
-            showwindow();
-            return;
+            
+                    String data=offlinechartdata.readdata();   //Collecting the data from file
+                    jsonarray=new JSONArray(data);
         }
         DefaultCategoryDataset total=new DefaultCategoryDataset();
         
@@ -474,10 +496,10 @@ rangeAxis.setRange(0, 4000);
     private javax.swing.JButton barchart;
     private javax.swing.JPanel deathpanel;
     private javax.swing.JComboBox jComboBox1;
-    private javax.swing.JLabel jLabel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JButton linechart;
+    private javax.swing.JLabel record;
     private javax.swing.JPanel recoverpanel;
     private javax.swing.JPanel totalpanel;
     // End of variables declaration//GEN-END:variables
